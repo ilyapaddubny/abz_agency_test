@@ -10,6 +10,7 @@ import SwiftUI
 struct NoConnectionView: View {
     var body: some View {
         Text("NoConnectionView")
+            .appTextStyle(.b3)
     }
 }
 
