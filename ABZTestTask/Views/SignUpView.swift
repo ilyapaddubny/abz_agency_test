@@ -76,10 +76,11 @@ struct SignUpView: View {
             showingPhotoPicker: $showingPhotoPicker,
             showingCameraPicker: $showingCameraPicker
         )
-        .sheet(isPresented: .constant(viewModel.registrationSuccess != nil), onDismiss: viewModel.resetRegistrationStatus) {
-            // Registration Status Modal (Keep existing placeholder or final implementation)
+        .fullScreenCover(isPresented: .constant(viewModel.registrationSuccess != nil), onDismiss: viewModel.resetRegistrationStatus) {
             RegistrationStatusModalView(viewModel: viewModel)
         }
+
+
         .onAppear {
              // Fetch positions only if needed
              if viewModel.positions.isEmpty {
@@ -332,31 +333,6 @@ private enum Constants {
     }
 }
 
-
-// MARK: - Placeholder for RegistrationStatusView (Rename if needed)
-private struct RegistrationStatusModalView: View { // Renamed for clarity
-    @ObservedObject var viewModel: SignUpViewModel // Pass VM to access state/reset action
-
-    var body: some View {
-        // Re-implement based on mockups 0208 & 0209 later
-        VStack {
-            if let isSuccess = viewModel.registrationSuccess {
-                Text(isSuccess ? "Success!" : "Failed!")
-                    .font(.largeTitle)
-                Text(isSuccess ? "User successfully registered" : (viewModel.errorMessage ?? "Registration failed"))
-                    .padding()
-                Button(isSuccess ? "Got it" : "Try Again") {
-                    viewModel.resetRegistrationStatus()
-                }
-                .buttonStyle(PrimaryFilledButtonStyle())
-            } else {
-                 // Should ideally not be shown if viewModel.registrationSuccess is nil
-                 ProgressView()
-            }
-        }
-        .padding(40)
-    }
-}
 
 // MARK: - Preview
 #Preview {
