@@ -58,7 +58,7 @@ struct SignUpView: View {
                         isLoading: viewModel.isLoading,
                         generalError: viewModel.errorMessage,
                         signUpAction: {
-                            focusedField = nil // Dismiss keyboard
+                            focusedField = nil
                             Task { await viewModel.registerUser() }
                         }
                     )
@@ -122,7 +122,16 @@ private extension SignUpView {
                 )
                     .textContentType(.emailAddress).submitLabel(.next)
 
-                StyledTextField(label: Constants.Strings.phoneLabel, text: $phone, prompt: Constants.Strings.phonePlaceholder, keyboardType: .phonePad, errorMessage: validationErrors["phone"], focusState: focusedField, fieldCase: .phone)
+                StyledTextField(
+                    label: Constants.Strings.phoneLabel,
+                    text: $phone,
+                    prompt: Constants.Strings.phonePlaceholder,
+                    keyboardType: .phonePad,
+                    errorMessage: validationErrors["phone"],
+                    hintText: "+38 (XXX) XXX - XX - XX",
+                    focusState: focusedField,
+                    fieldCase: .phone
+                )
                     .textContentType(.telephoneNumber).submitLabel(.done)
             }
             .onSubmit { // Attach onSubmit here to handle focus within the section
@@ -184,7 +193,6 @@ private extension SignUpView {
 
         var body: some View {
             VStack(spacing: 10) {
-                Spacer(minLength: 30)
                 Button(Constants.Strings.signUpButtonLabel, action: signUpAction)
                     .buttonStyle(PrimaryFilledButtonStyle())
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -320,7 +328,7 @@ private enum Constants {
         static let sectionSpacing: CGFloat = 25
         static let fieldSpacing: CGFloat = 18 // Example spacing between text fields
         static let horizontalPadding: CGFloat = 16
-        static let formVerticalPadding: CGFloat = 30
+        static let formVerticalPadding: CGFloat = 20
     }
 }
 

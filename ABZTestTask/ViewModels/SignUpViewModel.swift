@@ -195,20 +195,20 @@ final class SignUpViewModel: ObservableObject {
         let trimmedPhone = phone.trimmingCharacters(in: .whitespacesAndNewlines)
 
         // Name Validation (Length based on API spec)
-        if trimmedName.count < 2 || trimmedName.count > 60 {
-            errors["name"] = "Name must be 2-60 characters."
+        if trimmedName.count < 1 {
+            errors["name"] = "Required field"
         }
 
         // Email Validation (Basic RFC-like pattern, API does stricter check)
         let emailPattern = #"^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$"#
         if trimmedEmail.isEmpty || trimmedEmail.range(of: emailPattern, options: .regularExpression) == nil {
-             errors["email"] = "Please enter a valid email address."
+             errors["email"] = "Invalid email format"
         }
 
         // Phone Validation (Ukrainian format +380XXXXXXXXX)
         let phonePattern = #"^[\+]{0,1}380([0-9]{9})$"#
         if trimmedPhone.isEmpty || trimmedPhone.range(of: phonePattern, options: .regularExpression) == nil {
-             errors["phone"] = "Use format +380XXXXXXXXX."
+             errors["phone"] = "Required field"
         }
 
         // Position Validation (Check if selected)

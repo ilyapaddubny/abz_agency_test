@@ -5,8 +5,30 @@
 //  Created by Ilya Paddubny on 20.04.2025.
 //
 
-
 import SwiftUI
+
+// MARK: - Constants
+private enum Constants {
+    // Dimensions
+    static let fieldHeight: CGFloat = 56
+    static let cornerRadius: CGFloat = 4
+    static let defaultBorderWidth: CGFloat = 1
+    static let focusedBorderWidth: CGFloat = 2
+    
+    // Padding
+    static let horizontalPadding: CGFloat = 16
+    static let verticalPadding: CGFloat = 14
+    static let labelHorizontalPadding: CGFloat = 12
+    static let labelTopPaddingWhenFloating: CGFloat = 8
+    static let hintTextTopPadding: CGFloat = 4
+    
+    // Animation
+    static let labelAnimationDuration: Double = 0.2
+    
+    // Offsets
+    static let floatingLabelYOffset: CGFloat = -20
+    static let placeholderLabelYOffset: CGFloat = 0
+}
 
 /**
  A reusable view for text input fields styled according to the app's design system.
@@ -14,7 +36,8 @@ import SwiftUI
  Includes a floating placeholder label, dynamic border color based on focus/error state,
  and displays validation error messages below the field. It integrates with an enum-based FocusState.
  */
-struct StyledTextField<FieldType: Hashable>: View { // Make it generic for the FocusState type
+struct StyledTextField<FieldType: Hashable>: View {
+    // MARK: - Properties
     let label: String
     @Binding var text: String
     var prompt: String? = nil
@@ -22,16 +45,19 @@ struct StyledTextField<FieldType: Hashable>: View { // Make it generic for the F
     var autocapitalization: UITextAutocapitalizationType = .sentences
     var isSecure: Bool = false
     var errorMessage: String?
+    var hintText: String? = nil
 
     // --- Focus State Integration ---
-    /// The binding to the parent view's focus state enum.
-    var focusState: FocusState<FieldType?>.Binding // Changed: Takes the parent's binding
-    /// The specific enum case this text field represents.
-    let fieldCase: FieldType // Added: Knows its own case
+    var focusState: FocusState<FieldType?>.Binding
+    let fieldCase: FieldType
 
-    // Determine colors based on state
+    // MARK: - Computed Properties
     private var isCurrentlyFocused: Bool {
-        focusState.wrappedValue == fieldCase // Check if the parent's state matches this field's case
+        focusState.wrappedValue == fieldCase
+    }
+
+    private var shouldFloatLabel: Bool {
+        isCurrentlyFocused || !text.isEmpty
     }
 
     private var borderColor: Color {
@@ -47,77 +73,114 @@ struct StyledTextField<FieldType: Hashable>: View { // Make it generic for the F
     private var labelColor: Color {
         if errorMessage != nil {
             return .errorRed
-        } else if isCurrentlyFocused { // Use the calculated boolean
+        } else if isCurrentlyFocused {
             return .appSecondary
         } else {
             return .secondaryText
         }
     }
+    
+    private var borderWidth: CGFloat {
+        errorMessage != nil || isCurrentlyFocused ? Constants.focusedBorderWidth : Constants.defaultBorderWidth
+    }
 
+    // MARK: - Body
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(label)
-                .appTextStyle(.b3)
-                .foregroundColor(labelColor)
-                .padding(.horizontal, 12)
-                .offset(y: 8)
-                .zIndex(1)
-
-            Group {
-                if isSecure {
-                    SecureField("", text: $text)
-                        .focused(focusState, equals: fieldCase) // Apply focused modifier correctly
-                } else {
-                    TextField("", text: $text, prompt: prompt != nil ? Text(prompt!).foregroundColor(.secondaryText) : nil)
-                        .focused(focusState, equals: fieldCase) // Apply focused modifier correctly
+        VStack(alignment: .leading, spacing: Constants.hintTextTopPadding) {
+            ZStack(alignment: .leading) {
+                // Animated label/placeholder
+                Text(label)
+                    .appTextStyle(.b3)
+                    .foregroundColor(labelColor)
+                    .padding(.horizontal, Constants.labelHorizontalPadding)
+                    .background(shouldFloatLabel ? Color.white : Color.clear)
+                    .offset(x: 4, y: shouldFloatLabel ? Constants.floatingLabelYOffset : Constants.placeholderLabelYOffset)
+                    .scaleEffect(shouldFloatLabel ? 0.8 : 1, anchor: .leading)
+                    .animation(.easeOut(duration: Constants.labelAnimationDuration), value: shouldFloatLabel)
+                    .zIndex(1)
+                
+                // Text input field
+                Group {
+                    if isSecure {
+                        SecureField("", text: $text)
+                            .focused(focusState, equals: fieldCase)
+                    } else {
+                        TextField("", text: $text)
+                            .focused(focusState, equals: fieldCase)
+                    }
                 }
+                .keyboardType(keyboardType)
+                .textInputAutocapitalization(autocapitalization == .none ? .never : nil)
+                .autocorrectionDisabled(isSecure)
+                .appTextStyle(.b1)
+                .foregroundColor(.mainText)
+                .padding(.horizontal, Constants.horizontalPadding)
+                .frame(height: Constants.fieldHeight)
             }
-            .keyboardType(keyboardType)
-            .textInputAutocapitalization(autocapitalization == .none ? .never : nil)
-            .autocorrectionDisabled(isSecure)
-            .appTextStyle(.b1)
-            .foregroundColor(.mainText)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
             .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(borderColor, lineWidth: errorMessage != nil || isCurrentlyFocused ? 2 : 1) // Use calculated boolean
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                    .stroke(borderColor, lineWidth: borderWidth)
             )
-            .cornerRadius(4)
-            // .focused($isFocused) // REMOVED: .focused modifier applied directly to TextField/SecureField above
-
+            .cornerRadius(Constants.cornerRadius)
+            
+            // Error message or hint text
             if let error = errorMessage {
                 Text(error)
                     .appTextStyle(.b3)
                     .foregroundColor(.errorRed)
-                    .padding(.horizontal, 16)
+            } else if let hint = hintText {
+                Text(hint)
+                    .appTextStyle(.b3)
+                    .foregroundColor(.secondaryText)
+                    .padding(.leading)
             }
         }
     }
 }
 
+// MARK: - Preview
 #Preview {
     struct PreviewWrapper: View {
         // Define the enum for the focus state
         enum Field {
-            case email
+            case name, email, phone
         }
 
-        @State private var email: String = ""
+        @State private var name: String = ""
+        @State private var email: String = "username.gmail.com"
+        @State private var phone: String = ""
         @FocusState private var focusedField: Field?
 
         var body: some View {
-            VStack {
+            VStack(spacing: 20) {
+                StyledTextField<Field>(
+                    label: "Your name",
+                    text: $name,
+                    keyboardType: .default,
+                    errorMessage: name.isEmpty ? "Required field" : nil,
+                    focusState: $focusedField,
+                    fieldCase: .name
+                )
+                
                 StyledTextField<Field>(
                     label: "Email",
                     text: $email,
-                    prompt: "Enter your email",
                     keyboardType: .emailAddress,
-                    errorMessage: email.isEmpty ? "Email is required" : nil,
+                    autocapitalization: .none,
+                    errorMessage: "Invalid email format",
                     focusState: $focusedField,
                     fieldCase: .email
                 )
-                .padding()
+                
+                StyledTextField<Field>(
+                    label: "Phone",
+                    text: $phone,
+                    keyboardType: .phonePad,
+                    errorMessage: phone.isEmpty ? "Required field" : nil,
+                    hintText: "+38 (XXX) XXX - XX - XX",
+                    focusState: $focusedField,
+                    fieldCase: .phone
+                )
             }
             .padding()
             .environment(\.colorScheme, .light)
