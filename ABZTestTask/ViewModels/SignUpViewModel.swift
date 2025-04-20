@@ -167,7 +167,7 @@ final class SignUpViewModel: ObservableObject {
     /**
      Fetches the list of available positions from the API.
      */
-    private func fetchPositions() async {
+    func fetchPositions() async {
         self.isLoading = true // Indicate loading for positions
         self.errorMessage = nil
         do {
@@ -212,8 +212,14 @@ final class SignUpViewModel: ObservableObject {
         }
 
         // Position Validation (Check if selected)
-        if selectedPositionId == nil {
-            errors["position_id"] = "Please select a position." // Field name matches API expectation
+        var selectedPositionId: Int? {
+            didSet {
+                // When a position is selected (not nil), clear the corresponding validation error.
+                if selectedPositionId != nil {
+                    // We can modify validationErrors here because we are inside SignUpViewModel
+                    validationErrors["position_id"] = nil
+                }
+            }
         }
 
         // Photo Validation (Check if selected and size)
