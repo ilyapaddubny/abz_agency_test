@@ -57,9 +57,10 @@ struct UserListView: View {
         ZStack {
             ScrollView {
                 // LazyVStack improves performance
-                LazyVStack(spacing: 16) {
+                LazyVStack(spacing: 0) {
                     ForEach(viewModel.users) { user in
-                        UserCardView(user: user)
+                        UserCardView(user: user,
+                                     showDivider: user.id != viewModel.users.last?.id)
                             .padding(.horizontal, 16)
                             .onAppear {
                                 if user.id == viewModel.users.last?.id && viewModel.canLoadMorePages {
@@ -77,7 +78,6 @@ struct UserListView: View {
                     }
 
                 }
-                .padding(.top, 20)
                 .padding(.bottom, 20)
 
             }
