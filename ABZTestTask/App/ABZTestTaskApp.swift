@@ -24,15 +24,56 @@ struct ABZTestTaskApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var connectivityViewModel = ConnectivityViewModel()
     
+    @State private var showingSplash = true
+    
     var body: some Scene {
         WindowGroup {
-            if connectivityViewModel.isConnected {
-                SplashView()
-                    .environmentObject(connectivityViewModel)
-            } else {
-                NoConnectionView()
-                    .environmentObject(connectivityViewModel)
+            // Group allows applying environment objects/modifiers consistently
+            Group {
+                // Check connectivity first
+                if !connectivityViewModel.isConnected {
+                    NoConnectionView() 
+                }
+                // If connected, check if we should show the splash screen
+                else if showingSplash {
+                    SplashView()
+                        .onAppear {
+                            // Start a task to hide the splash screen after a delay
+                            Task {
+                                do {
+                                    // Wait for 1.5 seconds (1,500,000,000 nanoseconds)
+                                    try await Task.sleep(nanoseconds: 1_500_000_000)
+                                    
+                                    // Switch back to the main thread to update the UI state
+                                    await MainActor.run {
+                                        // Use animation for a smoother transition (optional)
+                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                            self.showingSplash = false
+                                        }
+                                    }
+                                } catch {
+                                    // Handle potential cancellation if the task is cancelled
+                                    print("Splash screen task cancelled.")
+                                    // Force hide splash even if sleep fails/cancels
+                                    await MainActor.run {
+                                        self.showingSplash = false
+                                    }
+                                }
+                            }
+                        }
+                }
+                else {
+                    MainTabView()
+                }
             }
+            .environmentObject(connectivityViewModel)
         }
+    }
+}
+
+// Placeholder for the main content view - Create this file later
+struct MainTabView: View {
+    var body: some View {
+        Text("Main Application Content (TabView Placeholder)")
     }
 }
