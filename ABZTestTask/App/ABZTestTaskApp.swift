@@ -32,7 +32,7 @@ struct ABZTestTaskApp: App {
             Group {
                 // Check connectivity first
                 if !connectivityViewModel.isConnected {
-                    NoConnectionView() 
+                    NoConnectionView()
                 }
                 // If connected, check if we should show the splash screen
                 else if showingSplash {
@@ -71,9 +71,3 @@ struct ABZTestTaskApp: App {
     }
 }
 
-// Placeholder for the main content view - Create this file later
-struct MainTabView: View {
-    var body: some View {
-        Text("Main Application Content (TabView Placeholder)")
-    }
-}
