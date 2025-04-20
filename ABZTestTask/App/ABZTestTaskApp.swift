@@ -9,9 +9,17 @@ import SwiftUI
 
 @main
 struct ABZTestTaskApp: App {
+    @StateObject private var connectivityViewModel = ConnectivityViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if connectivityViewModel.isConnected {
+                SplashView()
+                    .environmentObject(connectivityViewModel)
+            } else {
+                NoConnectionView()
+                    .environmentObject(connectivityViewModel)
+            }
         }
     }
 }
