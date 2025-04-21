@@ -30,11 +30,11 @@ struct UserListView: View {
             content
         }
         .background(Color.white.ignoresSafeArea())
-        .onAppear {
-            Task {
-                await viewModel.loadInitialUsers()
-            }
-        }
+//        .onAppear {
+//            Task {
+//                await viewModel.loadInitialUsers()
+//            }
+//        }
     }
 
     @ViewBuilder
@@ -102,15 +102,14 @@ struct UserListView: View {
     private struct EmptyStateView: View {
         var body: some View {
             VStack(spacing: 20) {
-                Image(systemName: "person.3.sequence")
+                Image(Images.emptyUsersPlaceholder)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 150, height: 150)
-                    .foregroundColor(.secondaryText)
+                    .frame(width: 200, height: 200)
 
                 Text(Strings.emptyListMessage)
-                    .appTextStyle(.b1)
-                    .foregroundColor(.secondaryText)
+                    .appTextStyle(.h1)
+                    .foregroundColor(.mainText)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }

@@ -33,16 +33,10 @@ final class ConnectivityViewModel: ObservableObject {
         ConnectivityService.shared.connectionPublisher
             .receive(on: DispatchQueue.main) // Ensure updates are received on the main thread
             .sink { [weak self] isConnected in
-                // Update the published property when the connection status changes.
                 self?.isConnected = isConnected
-                #if DEBUG
-                // Optional: Log connectivity changes during development
-                // print("Connectivity Status Changed: \(isConnected ? "Connected" : "Disconnected")")
-                #endif
             }
             .store(in: &cancellables) // Store the subscription to keep it alive.
 
-        // Set initial state directly as well
         self.isConnected = ConnectivityService.shared.isConnected
     }
 }
