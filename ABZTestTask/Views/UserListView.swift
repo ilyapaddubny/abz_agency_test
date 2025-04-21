@@ -30,11 +30,11 @@ struct UserListView: View {
             content
         }
         .background(Color.white.ignoresSafeArea())
-//        .onAppear {
-//            Task {
-//                await viewModel.loadInitialUsers()
-//            }
-//        }
+        .onAppear {
+            Task {
+                await viewModel.loadInitialUsers()
+            }
+        }
     }
 
     @ViewBuilder
