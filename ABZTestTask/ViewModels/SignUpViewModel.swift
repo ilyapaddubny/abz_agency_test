@@ -160,14 +160,32 @@ final class SignUpViewModel: ObservableObject {
         registrationSuccess = nil
     }
 
-     /**
-     Resets the registration status, typically called when the success/failure modal is dismissed.
+    /**
+     Resets the registration status. If resetting from a success state,
+     it also clears the form inputs.
      */
     func resetRegistrationStatus() {
+        // Check the status *before* resetting it
+        if self.registrationSuccess == true {
+            // Clear the form only if dismissing from a successful registration
+            clearFormInputs()
+        }
+        // Always reset the status flag, triggering the modal dismissal process
         self.registrationSuccess = nil
-        // Keep error messages displayed until user interacts with the form again or retries
     }
 
+    /** Clears all user input fields, selected position, photo, and errors. */
+       private func clearFormInputs() {
+           name = ""
+           email = ""
+           phone = ""
+           selectedPositionId = nil
+           selectedPhotoUIImage = nil // This will trigger didSet -> updatePhotoData -> selectedPhotoData = nil
+           validationErrors = [:]
+           errorMessage = nil
+           // Do NOT reset registrationSuccess here, that's done in resetRegistrationStatus
+           print("Form Cleared") // For debugging
+       }
 
     // MARK: - Private Helper Methods
 

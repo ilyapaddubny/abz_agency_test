@@ -68,6 +68,9 @@ struct SignUpView: View {
                 .padding(.horizontal, Constants.Layout.horizontalPadding)
                 .padding(.vertical, Constants.Layout.formVerticalPadding)
             }
+            .onTapGesture {
+                            focusedField = nil // Setting focus to nil dismisses the keyboard
+                        }
             .scrollDismissesKeyboard(.interactively)
         }
         .applyImagePickerModifiers( // Encapsulated modifiers
@@ -77,9 +80,8 @@ struct SignUpView: View {
             showingPhotoPicker: $showingPhotoPicker,
             showingCameraPicker: $showingCameraPicker
         )
-        .fullScreenCover(isPresented: $showStatusModal, onDismiss: {
-            viewModel.resetRegistrationStatus()
-        }) {
+        .fullScreenCover(isPresented: $showStatusModal,
+                         onDismiss: viewModel.resetRegistrationStatus) {
             RegistrationStatusModalView(viewModel: viewModel)
         }
         .onChange(of: viewModel.registrationSuccess) { newValue in
