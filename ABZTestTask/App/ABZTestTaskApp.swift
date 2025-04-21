@@ -67,6 +67,7 @@ struct ABZTestTaskApp: App {
                 }
             }
             .environmentObject(connectivityViewModel)
+            .preferredColorScheme(.light)
         }
     }
 }

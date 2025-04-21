@@ -159,6 +159,6 @@ struct UserListView: View {
          NavigationView {
              UserListView()
          }
-         .tabItem { Label("Users", systemImage: "person.3.fill") }
+         .tabItem { Label("Users", systemImage: "person.3.sequence.fill") }
      }
 }

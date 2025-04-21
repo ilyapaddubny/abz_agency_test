@@ -19,7 +19,7 @@ struct MainTabView: View {
         static let signUpTabLabel = "Sign up"
     }
     private enum Icons {
-        static let users = "person.3.fill"
+        static let users = "person.3.sequence.fill"
         static let signUp = "person.crop.circle.badge.plus"
     }
     enum Tab {

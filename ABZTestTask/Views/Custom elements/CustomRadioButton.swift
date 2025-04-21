@@ -15,8 +15,8 @@ struct CustomRadioButton: View {
 
     private enum Styling {
         static let outerCircleSize: CGFloat = 22
-        static let borderThickness: CGFloat = 2.5
-        static let innerCircleScale: CGFloat = 0.55
+        static let borderThicknessSelected: CGFloat = 5
+        static let borderThicknessNotSelected: CGFloat = 1.5
     }
 
     var body: some View {
@@ -25,18 +25,9 @@ struct CustomRadioButton: View {
                 ZStack {
                     Circle()
                         .strokeBorder(
-                            Color.appSecondary,
-                            lineWidth: Styling.borderThickness
+                            !isSelected ? Color.disabledText : Color.appSecondary ,
+                            lineWidth: isSelected ? Styling.borderThicknessSelected : Styling.borderThicknessNotSelected
                         )
-
-                    if isSelected {
-                        Circle()
-                            .fill(Color.appSecondary)
-                            .frame(
-                                width: Styling.outerCircleSize * Styling.innerCircleScale,
-                                height: Styling.outerCircleSize * Styling.innerCircleScale
-                            )
-                    }
                 }
                 .frame(
                     width: Styling.outerCircleSize,
