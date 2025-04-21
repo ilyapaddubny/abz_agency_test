@@ -31,10 +31,8 @@ struct UserListView: View {
         }
         .background(Color.white.ignoresSafeArea())
         .onAppear {
-            if viewModel.users.isEmpty && !viewModel.isLoading {
-                Task {
-                    await viewModel.loadInitialUsers()
-                }
+            Task {
+                await viewModel.loadInitialUsers()
             }
         }
     }
