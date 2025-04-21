@@ -117,7 +117,7 @@ The application integrates with the **ABZ.agency test API**:
 - `POST /users`: Registers new user  
 
 The API requires **token-based authentication** for user registration, implemented in the `APIService` class.  
-**API documentation**: [Swagger](https://frontend-test-assignment-api.abz.agency/api/docs)
+**API documentation**: [Swagger](https://openapi_apidocs.abz.dev/frontend-test-assignment-v1)
 
 ---
 
