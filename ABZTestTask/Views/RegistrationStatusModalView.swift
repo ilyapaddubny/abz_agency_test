@@ -31,7 +31,7 @@ struct RegistrationStatusModalView: View {
     private enum Layout {
         static let iconSize: CGFloat = 200
         static let spacing: CGFloat = 30
-        static let contentPadding: CGFloat = 40
+        static let contentPadding: CGFloat = 16
         static let buttonTopPadding: CGFloat = 40
         static let closeButtonPadding: CGFloat = 16
         static let closeButtonSize: CGFloat = 16

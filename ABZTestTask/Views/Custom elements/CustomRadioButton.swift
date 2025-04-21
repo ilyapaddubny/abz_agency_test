@@ -14,18 +14,18 @@ struct CustomRadioButton: View {
     let action: () -> Void
 
     private enum Styling {
-        static let outerCircleSize: CGFloat = 22
-        static let borderThicknessSelected: CGFloat = 5
+        static let outerCircleSize: CGFloat = 20
+        static let borderThicknessSelected: CGFloat = 4.5
         static let borderThicknessNotSelected: CGFloat = 1.5
     }
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 20) {
+            HStack(spacing: 18) {
                 ZStack {
                     Circle()
                         .strokeBorder(
-                            !isSelected ? Color.disabledText : Color.appSecondary ,
+                            !isSelected ? Color.disabledText.opacity(0.6) : Color.appSecondary ,
                             lineWidth: isSelected ? Styling.borderThicknessSelected : Styling.borderThicknessNotSelected
                         )
                 }

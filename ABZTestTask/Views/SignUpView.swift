@@ -24,12 +24,13 @@ struct SignUpView: View {
     @State private var showingImageSourceDialog = false
     @State private var showingPhotoPicker = false
     @State private var showingCameraPicker = false
+    @State private var showStatusModal = false
 
     enum Field: Hashable { case name, email, phone }
 
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 12) {
             ScreenTitleBar(title: Constants.Strings.screenTitle)
 
             ScrollView {
@@ -76,8 +77,13 @@ struct SignUpView: View {
             showingPhotoPicker: $showingPhotoPicker,
             showingCameraPicker: $showingCameraPicker
         )
-        .fullScreenCover(isPresented: .constant(viewModel.registrationSuccess != nil), onDismiss: viewModel.resetRegistrationStatus) {
+        .fullScreenCover(isPresented: $showStatusModal, onDismiss: {
+            viewModel.resetRegistrationStatus()
+        }) {
             RegistrationStatusModalView(viewModel: viewModel)
+        }
+        .onChange(of: viewModel.registrationSuccess) { newValue in
+            showStatusModal = (newValue != nil)
         }
 
 
@@ -151,16 +157,16 @@ private extension SignUpView {
         let positionError: String?
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 20) {
                 Text(Constants.Strings.positionSectionTitle)
                     .appTextStyle(.b1).foregroundColor(.mainText)
 
                 ForEach(positions) { position in
-                    CustomRadioButton( // This now refers to your *new* custom RadioButton struct
+                    CustomRadioButton(
                         title: position.name,
                         isSelected: selectedPositionId == position.id
                     ) {
-                        selectedPositionId = position.id // Action remains the same
+                        selectedPositionId = position.id
                     }
                 }
                 .padding(.leading)
@@ -282,7 +288,7 @@ private extension View {
                 selection: selectedPhotoItem,
                 matching: .images
             )
-            .onChange(of: selectedPhotoItem.wrappedValue) { newItem in // Attach onChange here
+            .onChange(of: selectedPhotoItem.wrappedValue) { newItem in
                 Task {
                     if let data = try? await newItem?.loadTransferable(type: Data.self) {
                         viewModel.selectedPhotoUIImage = UIImage(data: data)
@@ -299,11 +305,6 @@ private extension View {
                      set: { viewModel.selectedPhotoUIImage = $0 }
                  ), sourceType: .camera)
                      .ignoresSafeArea()
-                     // .onDisappear { // ViewModel should handle error clearing internally
-                     //     if viewModel.selectedPhotoUIImage != nil {
-                     //         viewModel.validationErrors["photo"] = nil
-                     //     }
-                     // }
             }
     }
 }

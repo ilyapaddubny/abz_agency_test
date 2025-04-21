@@ -24,7 +24,14 @@ final class SignUpViewModel: ObservableObject {
     @Published var name: String = ""
     @Published var email: String = ""
     @Published var phone: String = ""
-    @Published var selectedPositionId: Int?
+    @Published var selectedPositionId: Int? {
+        didSet {
+            if selectedPositionId != nil {
+                validationErrors["position_id"] = nil
+            }
+        }
+    }
+    
     @Published var selectedPhotoUIImage: UIImage? {
         didSet {
             // Convert UIImage to JPEG Data when image is selected
@@ -174,6 +181,13 @@ final class SignUpViewModel: ObservableObject {
             let response = try await APIService.fetchPositions()
             // Ensure positions are non-nil before assigning
             self.positions = response.positions ?? []
+            
+            if self.selectedPositionId == nil, let firstPosition = self.positions.first {
+                self.selectedPositionId = firstPosition.id
+                // Clear any lingering position error if we just pre-selected
+                self.validationErrors["position_id"] = nil
+            }
+            
         } catch let error as APIService.APIError {
              self.errorMessage = "Failed to load positions: \(error.localizedDescription)"
              print("❌ Error fetching positions: \(error)")
